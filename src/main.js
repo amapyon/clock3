@@ -13,11 +13,9 @@ var timer = 0
 var soundName = 'none'
 
 function createMainWindow () {
-  const win = new BrowserWindow({width: 600, height: 200, autoHideMenuBar: true})
+  const win = new BrowserWindow({width: 600, height: 250, autoHideMenuBar: true})
 
   win.loadFile('src/main.html')
-
-  win.setAlwaysOnTop(false)
 
   win.on('closed', function(){
     subWin.close()
@@ -30,7 +28,6 @@ function createTimerWindow () {
   subWin = win
 
   win.loadFile('src/timer.html')
-//  win.setAlwaysOnTop(true)
 }
 
 function createWindow() {
@@ -62,15 +59,11 @@ function createWindow() {
   ipcMain.on('main-window-loaded', function(event, arg) {
     mainWin = event.sender
     
-    console.log(__dirname)
-    
     const fs = require('fs')
     fs.readdir(__dirname + '/../media', function(err, files){
       if (err) throw err
-      console.log(files)
       files.forEach(function(filename){
         if (/.*\.mp3$/.test(filename) || /.*\.wav$/.test(filename)) {
-          console.log(filename)
           mainWin.send('set-soundfile', filename)
         }
       })
@@ -125,7 +118,8 @@ function updateDisplay(remainTime) {
   const minute = Math.trunc(sec / 60)
   const second = (sec % 60 + 100).toString().slice(-2)
   console.log(sec, minute, second)
-  timerWin.send('update-display', minute + ':' + second)
+  if (timerWin != null) timerWin.send('update-display', minute + ':' + second)
+  if (mainWin != null) mainWin.send('update-display', minute + ':' + second)
 }
 
 function updateDisplayColor(color) {
