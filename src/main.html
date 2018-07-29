@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>Timer Controller</title>
+<style type="text/css">
+.button {
+  background-color: #dddddd;
+  margin: 0px;
+  padding: 4px;
+  border: thin solid #333333;
+}
+
+</style>
+<script type="text/javascript">
+const {ipcRenderer} = require('electron')
+
+ipcRenderer.on('set-soundfile', function(event, soundfilename) {
+  const radioNode = document.createElement('spawn')
+  radioNode.innerHTML = '<input type="radio" name="sound" value="' + soundfilename + '" onclick="sound(this)">' + soundfilename + '</input>'
+  
+  const soundNode = document.getElementById('sound')
+  soundNode.appendChild(radioNode)
+})
+
+ipcRenderer.on('update', function(event, arg){
+  console.log('UPDATE')
+  console.log(event)
+  console.log(arg)
+})
+
+function clicked(sender) {
+  console.log('CLICKED')
+  console.log(sender)
+  console.log(sender.innerHTML)
+  
+  ipcRenderer.send('button-clicked', sender.innerHTML)
+  
+}
+
+function downed(sender) {
+  console.log('DOWNED')
+  console.log(sender)
+}
+
+function changed(sender) {
+  console.log(sender.name)
+  console.log(sender.checked)
+
+  ipcRenderer.send('topmost-changed', sender.checked)
+}
+
+function sound(sender) {
+  console.log(sender.value)
+  ipcRenderer.send('sound-changed', sender.value)
+}
+
+function play() {
+  const sounds = document.getElementsByName('sound')
+  console.log(sounds)
+  
+  sounds.forEach(function(soundNode) {
+    if (soundNode.checked && soundNode.value != 'none') {
+      const chime = new Audio('file://' + __dirname + '/../media/' + soundNode.value);
+      chime.play()
+    }
+  })
+
+}
+
+function loaded() {
+  ipcRenderer.send('main-window-loaded', {})
+}
+
+</script>
+</head>
+<body onload="loaded()">
+  <p id="display"></p>
+  <p id="position">
+    <input type="checkbox" name="topMost" onclick="changed(this)">最前面に配置</input>
+  </p>
+  <p id="sound">
+    <input type="button" value="音を確認" onclick="play()"/>
+    <input type="radio" name="sound" value="none" onclick="sound(this)" checked>鳴らさない</input>
+<!--    <input type="radio" name="sound" value="chime.wav" onclick="sound(this)" >chime.wav</input> -->
+<!--    <input type="radio" name="sound" value="gong.mp3" onclick="sound(this)" >gong.mp3</input> -->
+<!--    <input type="radio" name="sound" value="whisle.mp3" onclick="sound(this)" >whisle.mp3</input> -->
+  </p>
+  <p id="button">
+    <input type="button" value="継続" onclick="clicked(this)" />
+    <input type="button" value="停止" onclick="clicked(this)" />
+    <spawn class="button" onclick="clicked(this)" contenteditable="true" >1分</spawn>
+    <spawn class="button" onclick="clicked(this)" contenteditable="true" >2分</spawn>
+    <spawn class="button" onclick="clicked(this)" contenteditable="true" >3分</spawn>
+    <spawn class="button" onclick="clicked(this)" contenteditable="true" >4分</spawn>
+    <spawn class="button" onclick="clicked(this)" contenteditable="true" >5分</spawn>
+    <spawn class="button" onclick="clicked(this)" contenteditable="true" >7分</spawn>
+    <spawn class="button" onclick="clicked(this)" contenteditable="true" >10分</spawn>
+    <spawn class="button" onclick="clicked(this)" contenteditable="true" >15分</spawn>
+    <spawn class="button" onclick="clicked(this)" contenteditable="true" >20分</spawn>
+    <spawn class="button" onclick="clicked(this)" contenteditable="true" >5秒</spawn>
+  </p>
+</body>
+</html>
