@@ -5,8 +5,8 @@
   "main": "./src/main.js",
   "scripts": {
     "start": "electron .",
-    "build-macOS": "electron-packager ./src clock3 --platform=darwin --arch=x64 --overwrite --electron-version=2.0.5",
-    "build-windows": "electron-packager ./src clock3 --platform=win32 --arch=x64 --overwrite --electron-version=2.0.5"
+    "build-macOS": "electron-packager ./src clock3 --platform=darwin --arch=x64 --overwrite --electron-version=2.0.6",
+    "build-windows": "electron-packager . clock3 --platform=win32 --arch=x64 --overwrite --electron-version=2.0.6"
   },
   "repository": {
     "type": "git",

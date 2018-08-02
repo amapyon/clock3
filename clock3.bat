@@ -1,1 +1,2 @@
+REM npm start
 electron .

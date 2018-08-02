@@ -13,6 +13,8 @@
 
 </style>
 <script type="text/javascript">
+'use strict'
+
 const {ipcRenderer} = require('electron')
 
 ipcRenderer.on('set-soundfile', function(event, soundfilename) {
@@ -24,7 +26,7 @@ ipcRenderer.on('set-soundfile', function(event, soundfilename) {
 })
 
 ipcRenderer.on('update-display', function(event, arg){
-  console.log('UPDATE')
+  console.log('UPDATE-DISPLAY')
   console.log(event)
   console.log(arg)
   
@@ -32,12 +34,12 @@ ipcRenderer.on('update-display', function(event, arg){
   display.innerHTML = arg
 })
 
-function clicked(sender) {
-  console.log('CLICKED')
+function timerStart(sender) {
+  console.log('TIMER-START')
   console.log(sender)
   console.log(sender.innerHTML)
   
-  ipcRenderer.send('button-clicked', sender.innerHTML)
+  ipcRenderer.send('timer', sender.innerHTML)
 }
 
 function controlClicked(sender) {
@@ -45,7 +47,7 @@ function controlClicked(sender) {
   console.log(sender)
   console.log(sender.value)
   
-  ipcRenderer.send('button-clicked', sender.value)
+  ipcRenderer.send('timer', sender.value)
 }
 
 function downed(sender) {
@@ -78,6 +80,10 @@ function play() {
 
 }
 
+function send(arg) {
+  ipcRenderer.send('main-window', arg)
+}
+
 function loaded() {
   ipcRenderer.send('main-window-loaded', {})
   
@@ -105,9 +111,11 @@ function loaded() {
 </script>
 </head>
 <body onload="loaded()">
-  <p id="display"></p>
+  <p id="display">0:00</p>
   <p id="position">
-    <input type="checkbox" name="topMost" onclick="changed(this)">最前面に配置</input>
+    <input type="checkbox" name="topMost" onclick="changed(this)">最前面に固定</input>
+    <input type="button" onclick="send('minimize')" value="最小化" />
+    <input type="button" onclick="send('restore')" value="通常" />
   </p>
   <p id="sound">
     <input type="button" value="音を確認" onclick="play()"/>
@@ -116,16 +124,16 @@ function loaded() {
   <p id="button">
     <input type="button" value="継続" onclick="controlClicked(this)" />
     <input type="button" value="停止" onclick="controlClicked(this)" />
-    <spawn class="button" name="time" onclick="clicked(this)" contenteditable="false" >1分</spawn>
-    <spawn class="button" name="time" onclick="clicked(this)" contenteditable="false" >2分</spawn>
-    <spawn class="button" name="time" onclick="clicked(this)" contenteditable="false" >3分</spawn>
-    <spawn class="button" name="time" onclick="clicked(this)" contenteditable="false" >4分</spawn>
-    <spawn class="button" name="time" onclick="clicked(this)" contenteditable="false" >5分</spawn>
-    <spawn class="button" name="time" onclick="clicked(this)" contenteditable="false" >7分</spawn>
-    <spawn class="button" name="time" onclick="clicked(this)" contenteditable="false" >10分</spawn>
-    <spawn class="button" name="time" onclick="clicked(this)" contenteditable="false" >15分</spawn>
-    <spawn class="button" name="time" onclick="clicked(this)" contenteditable="false" >20分</spawn>
-    <spawn class="button" name="time" onclick="clicked(this)" contenteditable="false" >5秒</spawn>
+    <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >1分</spawn>
+    <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >2分</spawn>
+    <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >3分</spawn>
+    <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >4分</spawn>
+    <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >5分</spawn>
+    <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >7分</spawn>
+    <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >10分</spawn>
+    <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >15分</spawn>
+    <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >20分</spawn>
+    <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >5秒</spawn>
   </p>
 </body>
 </html>

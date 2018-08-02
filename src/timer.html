@@ -13,11 +13,11 @@ body {
   background-color: rgba(70, 70, 70, 0.6);
   color: #000000;
   text-align: center;
-  -webkit-app-region: drag;
   margin: 0px auto;
   padding: 0px;
-  font-size: 20px;
+  font-size: 24pt;
   font-family: "Impact";
+  -webkit-app-region: drag;
 }
 
 .display {
@@ -34,10 +34,10 @@ p {
 <script type="text/javascript">
 const {ipcRenderer} = require('electron')
 
-var fontSize = 20
+var fontSize = 24
 
 ipcRenderer.on('update-display', function(event, arg){
-  console.log('UPDATE')
+  console.log('UPDATE-DISPLAY')
   console.log(event)
   console.log(arg)
   
@@ -55,12 +55,6 @@ ipcRenderer.on('play-chime', function(event, soundName) {
   chime.play()
 })
 
-function loaded() {
-  ipcRenderer.send('timer-window-loaded', {})
-
-  document.addEventListener('wheel', fontResize)
-}
-
 function fontResize(sender) {
   console.log(sender);
   if (sender.deltaY > 0) {
@@ -68,14 +62,20 @@ function fontResize(sender) {
   } else if (sender.deltaY < 0) {
     fontSize -= 1
   }
-  document.body.style.fontSize = fontSize + 'px'
+  document.body.style.fontSize = fontSize + 'pt'
+}
+
+function loaded() {
+  ipcRenderer.send('timer-window-loaded', {})
+
+  document.addEventListener('wheel', fontResize)
 }
 
 </script>
 </head>
 <body onload="loaded()">
   <div class="display">
-    <p id="display"></p>
+    <p id="display">0:00</p>
   </div>
 </body>
 </html>

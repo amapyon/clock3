@@ -13,7 +13,11 @@ var timer = 0
 var soundName = 'none'
 
 function createMainWindow () {
-  const win = new BrowserWindow({width: 600, height: 250, autoHideMenuBar: true})
+  const win = new BrowserWindow({
+    width: 600, height: 250,
+    autoHideMenuBar: true,
+    icon: '../icon/32.png'
+  })
 
   win.loadFile('src/main.html')
 
@@ -24,7 +28,11 @@ function createMainWindow () {
 }
 
 function createTimerWindow () {
-  const win = new BrowserWindow({width: 200, height: 100, transparent: true, frame: false})
+  const win = new BrowserWindow({
+    width: 200, height: 100,
+    transparent: true,
+    frame: false
+  })
   subWin = win
 
   win.loadFile('src/timer.html')
@@ -34,8 +42,8 @@ function createWindow() {
   createMainWindow()
   createTimerWindow()
   
-  ipcMain.on('button-clicked', function(event, arg) {
-    console.log('BUTTON-CLICKED')
+  ipcMain.on('timer', function(event, arg) {
+    console.log('TIMER')
     console.log(event)
     console.log(arg)
     
@@ -58,7 +66,7 @@ function createWindow() {
   
   ipcMain.on('main-window-loaded', function(event, arg) {
     mainWin = event.sender
-    
+
     const fs = require('fs')
     fs.readdir(__dirname + '/../media', function(err, files){
       if (err) throw err
@@ -74,6 +82,14 @@ function createWindow() {
     timerWin = event.sender
     updateDisplayColorDisable()
     updateDisplay(0)
+  })
+
+  ipcMain.on('main-window', (event, arg) => {
+    if (arg == 'minimize') {
+      subWin.minimize()
+    } else if (arg == 'restore') {
+      subWin.restore()
+    }
   })
   
   ipcMain.on('topmost-changed', function(event, arg) {
@@ -127,10 +143,10 @@ function updateDisplayColor(color) {
 }
 
 function updateDisplayColorEnable() {
-  updateDisplayColor('#FFFFFF')
+  updateDisplayColor('rgba(255, 255, 266, 0.6)')
 }
 function updateDisplayColorDisable() {
-  updateDisplayColor('#AAAAAA')
+  updateDisplayColor('rgba(192, 192, 192, 0.6)')
 }
 
 function playChime() {
@@ -155,3 +171,6 @@ function countDown() {
 }
 
 app.on('ready', createWindow)
+app.on('window-all-closed', function() {  
+  app.quit();
+});
