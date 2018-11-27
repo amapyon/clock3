@@ -2,8 +2,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <meta name="viewport" content="initial-scale=1.0">
-  <title>Timer</title>
+  <title>Message</title>
 <style type="text/css">
 
 html {
@@ -11,8 +10,8 @@ html {
 }
 
 body {
-  background-color: rgba(70, 70, 70, 0.8);
-  color: #000000;
+  background-color: rgba(128, 128, 128, 0.8);
+  color: #FFFFFF;
   text-align: center;
   margin: 0px auto;
   padding: 0px;
@@ -37,23 +36,13 @@ const {ipcRenderer} = require('electron')
 
 var fontSize = 24
 
-ipcRenderer.on('update-display', function(event, arg){
+ipcRenderer.on('message', function(event, arg){
   console.log('UPDATE-DISPLAY')
   console.log(event)
   console.log(arg)
   
   const display = document.getElementById('display')
   display.innerHTML = arg
-})
-
-ipcRenderer.on('update-display-color', function(event, arg){
-  const display = document.getElementById('display')
-  display.setAttribute('style', 'color:' + arg + ';')
-})
-
-ipcRenderer.on('play-chime', function(event, soundName) {
-  const chime = new Audio('file://' + __dirname + '/../media/' + soundName);
-  chime.play()
 })
 
 function fontResize(sender) {
@@ -67,16 +56,16 @@ function fontResize(sender) {
 }
 
 function loaded() {
-  ipcRenderer.send('timer-window-loaded', {})
+  ipcRenderer.send('message-window-loaded', {})
 
-  document.addEventListener('wheel', fontResize)
+  document.addEventListener('mousewheel', fontResize)
 }
 
 </script>
 </head>
 <body onload="loaded()">
   <div class="display">
-    <p id="display">0:00</p>
+    <p id="display">-</p>
   </div>
 </body>
 </html>

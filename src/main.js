@@ -2,9 +2,13 @@
 
 const {app, BrowserWindow, ipcMain} = require('electron')
 
-var subWin = null
+//var subWin = null
+var mainWindow = null
 var mainWin = null
+var timerWindow = null
 var timerWin = null
+var messageWindow = null
+var messageWin = null
 var settedTime = 0
 var remainTime = 0
 var elipseTime = 0
@@ -13,30 +17,50 @@ var timer = 0
 var soundName = 'none'
 
 function createMainWindow () {
-  const win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 600, height: 250,
     autoHideMenuBar: true,
     icon: '../icon/32.png'
   })
 
-  win.loadFile('src/main.html')
+  mainWindow.loadFile('src/main.html')
 
-  win.on('closed', function(){
-    subWin.close()
+  mainWindow.on('closed', function(){
+    if (timerWindow != null) timerWindow.close()
+    if (messageWindow != null) messageWindow.close()
   })
 
 }
 
 function createTimerWindow () {
-  const win = new BrowserWindow({
+  timerWindow = new BrowserWindow({
     width: 200, height: 100,
     transparent: true,
     frame: false
   })
-  subWin = win
 
-  win.loadFile('src/timer.html')
+  timerWindow.loadFile('src/timer.html')
+
+  timerWindow.on('closed', function(){
+    timerWindow = null
+  })
 }
+
+function createMessageWindow() {
+  if (messageWindow != null) return
+  messageWindow = new BrowserWindow({
+    width: 640, height: 480,
+    transparent: true,
+    frame: false
+  })
+
+  messageWindow.loadFile('src/message.html')
+
+  messageWindow.on('closed', function(){
+    messageWindow = null
+  })
+}
+
 
 function createWindow() {
   createMainWindow()
@@ -86,22 +110,40 @@ function createWindow() {
 
   ipcMain.on('main-window', (event, arg) => {
     if (arg == 'minimize') {
-      subWin.minimize()
+      timerWindow.minimize()
     } else if (arg == 'restore') {
-      subWin.restore()
+      timerWindow.restore()
     }
   })
   
   ipcMain.on('topmost-changed', function(event, arg) {
     console.log('TOPMOST-CHAGED')
     console.log(arg)
-    subWin.setAlwaysOnTop(arg)
+    timerWindow.setAlwaysOnTop(arg)
   })
   
   ipcMain.on('sound-changed', function(event, arg) {
     console.log('SOUND-CHAGED')
     console.log(arg)
     soundName = arg
+  })
+
+  ipcMain.on('main-window-dispayMessage', function(event, arg) {
+    console.log('MAIN-WINDOW-DISPLAY_MESSAGE')
+    console.log(arg)
+    createMessageWindow()
+    if (arg) {
+      messageWindow.show()
+    } else {
+      messageWindow.hide()
+    }
+  })
+
+  ipcMain.on('main-window-changeMessage', function(event, arg) {
+    console.log('MAIN-WINDOW-CHANGE_MESSAGE')
+    console.log(arg)
+    if (messageWindow == null) return
+    messageWindow.webContents.send('message', arg)
   })
 }
 
@@ -143,10 +185,10 @@ function updateDisplayColor(color) {
 }
 
 function updateDisplayColorEnable() {
-  updateDisplayColor('rgba(255, 255, 266, 0.6)')
+  updateDisplayColor('rgba(255, 255, 266, 0.8)')
 }
 function updateDisplayColorDisable() {
-  updateDisplayColor('rgba(192, 192, 192, 0.6)')
+  updateDisplayColor('rgba(192, 192, 192, 0.8)')
 }
 
 function playChime() {
