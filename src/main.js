@@ -18,7 +18,7 @@ var soundName = 'none'
 
 function createMainWindow () {
   mainWindow = new BrowserWindow({
-    width: 600, height: 250,
+    width: 600, height: 350,
     autoHideMenuBar: true,
     icon: '../icon/32.png'
   })
@@ -71,7 +71,9 @@ function createWindow() {
     console.log(event)
     console.log(arg)
     
-    if (arg == '継続') {
+    if (arg == '時計') {
+      clockStart()
+    } else if (arg == '継続') {
       timerContinue()
     } else if (arg == '停止') {
       timerPause()
@@ -105,7 +107,7 @@ function createWindow() {
   ipcMain.on('timer-window-loaded', function(event, arg) {
     timerWin = event.sender
     updateDisplayColorDisable()
-    updateDisplay(0)
+    updateDisplay(toMMSS(0))
   })
 
   ipcMain.on('main-window', (event, arg) => {
@@ -116,10 +118,26 @@ function createWindow() {
     }
   })
   
-  ipcMain.on('topmost-changed', function(event, arg) {
-    console.log('TOPMOST-CHAGED')
+  ipcMain.on('main-window-topmost-changed', function(event, arg) {
+    console.log('main-WINDOW-TOPMOST-CHAGED')
+    console.log(event)
+    console.log(arg)
+    mainWindow.setAlwaysOnTop(arg)
+  })
+  
+  ipcMain.on('timer-window-topmost-changed', function(event, arg) {
+    console.log('TIMER-WINDOW-TOPMOST-CHAGED')
+    console.log(event)
     console.log(arg)
     timerWindow.setAlwaysOnTop(arg)
+  })
+  
+  ipcMain.on('message-window-topmost-changed', function(event, arg) {
+    console.log('MESSAGE-WINDOW-TOPMOST-CHAGED')
+    console.log(event)
+    console.log(arg)
+    if (messageWindow == null) return
+    messageWindow.setAlwaysOnTop(arg)
   })
   
   ipcMain.on('sound-changed', function(event, arg) {
@@ -143,14 +161,26 @@ function createWindow() {
     console.log('MAIN-WINDOW-CHANGE_MESSAGE')
     console.log(arg)
     if (messageWindow == null) return
-    messageWindow.webContents.send('message', arg)
+    messageWindow.webContents.send('message', arg.replace(/\n/g, '<br />'))
   })
+}
+
+function clockStart() {
+  clearInterval(timer)
+  updateDisplayColorEnable()
+
+  timer = setInterval(clockUpdate, 200)
+}
+
+function clockUpdate() {
+  const now = new Date()
+  updateDisplay(now.toLocaleTimeString())
 }
 
 function timerStart(time) {
   settedTime = time * 1000
   remainTime = settedTime
-  updateDisplay(remainTime)
+  updateDisplay(toMMSS(remainTime))
   elipseTime = 0
   
   timerContinue()
@@ -171,13 +201,18 @@ function timerContinue() {
   timer = setInterval(countDown, 200)
 }
 
-function updateDisplay(remainTime) {
+function toMMSS(time) {
   const sec = Math.trunc(remainTime / 1000)
   const minute = Math.trunc(sec / 60)
   const second = (sec % 60 + 100).toString().slice(-2)
   console.log(sec, minute, second)
-  if (timerWin != null) timerWin.send('update-display', minute + ':' + second)
-  if (mainWin != null) mainWin.send('update-display', minute + ':' + second)
+
+  return minute + ':' + second
+}
+
+function updateDisplay(message) {
+  if (timerWin != null) timerWin.send('update-display', message)
+  if (mainWin != null) mainWin.send('update-display', message)
 }
 
 function updateDisplayColor(color) {
@@ -205,7 +240,7 @@ function countDown() {
   remainTime = settedTime - elipseTime
   console.log(settedTime, elipseTime, remainTime)
 
-  updateDisplay(remainTime)
+  updateDisplay(toMMSS(remainTime))
   if (remainTime <= 0) {
     timerStop()
     playChime()
@@ -214,5 +249,5 @@ function countDown() {
 
 app.on('ready', createWindow)
 app.on('window-all-closed', function() {  
-  app.quit();
-});
+  app.quit()
+})

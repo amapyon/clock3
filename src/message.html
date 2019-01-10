@@ -31,10 +31,9 @@ p {
 }
 
 </style>
+<script src="wheel.js"></script>
 <script type="text/javascript">
 const {ipcRenderer} = require('electron')
-
-var fontSize = 24
 
 ipcRenderer.on('message', function(event, arg){
   console.log('UPDATE-DISPLAY')
@@ -45,20 +44,10 @@ ipcRenderer.on('message', function(event, arg){
   display.innerHTML = arg
 })
 
-function fontResize(sender) {
-  console.log(sender);
-  if (sender.deltaY > 0) {
-    fontSize += 1
-  } else if (sender.deltaY < 0) {
-    fontSize -= 1
-  }
-  document.body.style.fontSize = fontSize + 'pt'
-}
-
 function loaded() {
   ipcRenderer.send('message-window-loaded', {})
 
-  document.addEventListener('mousewheel', fontResize)
+  document.addEventListener('wheel', wheel)
 }
 
 </script>

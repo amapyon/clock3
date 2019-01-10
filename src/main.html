@@ -55,11 +55,25 @@ function downed(sender) {
   console.log(sender)
 }
 
-function changed(sender) {
+function mainWindowTopMostChanged(sender) {
   console.log(sender.name)
   console.log(sender.checked)
 
-  ipcRenderer.send('topmost-changed', sender.checked)
+  ipcRenderer.send('main-window-topmost-changed', sender.checked)
+}
+
+function timerWindowTopMostChanged(sender) {
+  console.log(sender.name)
+  console.log(sender.checked)
+
+  ipcRenderer.send('timer-window-topmost-changed', sender.checked)
+}
+
+function messageWindowTopMostChanged(sender) {
+  console.log(sender.name)
+  console.log(sender.checked)
+
+  ipcRenderer.send('message-window-topmost-changed', sender.checked)
 }
 
 function sound(sender) {
@@ -120,8 +134,11 @@ function loaded() {
 </head>
 <body onload="loaded()">
   <p id="display">0:00</p>
+  <p id="">
+    <input type="checkbox" name="topMostMain" onclick="mainWindowTopMostChanged(this)">最前面に固定</input>
+  </p>
   <p id="position">
-    <input type="checkbox" name="topMost" onclick="changed(this)">最前面に固定</input>
+    <input type="checkbox" name="topMostTimer" onclick="timerWindowTopMostChanged(this)">最前面に固定</input>
     <input type="button" onclick="send('minimize')" value="最小化" />
     <input type="button" onclick="send('restore')" value="通常" />
   </p>
@@ -130,6 +147,7 @@ function loaded() {
     <input type="radio" name="sound" value="none" onclick="sound(this)" checked>鳴らさない</input>
   </p>
   <p id="button">
+    <input type="button" value="時計" onclick="controlClicked(this)" />
     <input type="button" value="継続" onclick="controlClicked(this)" />
     <input type="button" value="停止" onclick="controlClicked(this)" />
     <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >1分</spawn>
@@ -143,9 +161,10 @@ function loaded() {
     <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >20分</spawn>
     <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >5秒</spawn>
   </p>
-  <p>
+  <p id="message">
+    <input type="checkbox" name="topMostMessage" onclick="messageWindowTopMostChanged(this)">最前面に固定</input>
     <input type="checkbox" name="displayMessage" onClick="displayMessage(this)">メッセージ表示</input>
-    <input type="textbox" id="message" col="80" onInput="changeMessage(this)" />
+    <textarea id="message" col="80" rows="3" onInput="changeMessage(this)"></textarea>
   </p>
 </body>
 </html>

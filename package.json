@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "build-macOS": "electron-packager ./src clock3 --platform=darwin --arch=x64 --overwrite --electron-version=^2.0.6",
-    "build-windows": "electron-packager . clock3 --platform=win32 --arch=x64 --overwrite --electron-version=^2.0.6"
+    "build-windows": "electron-packager . clock3 --platform=win32 --arch=x64 --overwrite --electron-version=^2.0.6",
     "build-windows-32": "electron-packager . clock3 --platform=win32 --arch=ia32 --overwrite --electron-version=^2.0.6"
   },
   "repository": {
@@ -23,6 +23,6 @@
     "electron-packager": "^12.1.0"
   },
   "dependencies": {
-    "electron": "^2.0.8"
+    "electron": "^2.0.6"
   }
 }

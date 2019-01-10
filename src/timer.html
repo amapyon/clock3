@@ -12,7 +12,7 @@ html {
 
 body {
   background-color: rgba(70, 70, 70, 0.8);
-  color: #000000;
+  color: #ffffff;
   text-align: center;
   margin: 0px auto;
   padding: 0px;
@@ -32,10 +32,9 @@ p {
 }
 
 </style>
+<script src="wheel.js"></script>
 <script type="text/javascript">
 const {ipcRenderer} = require('electron')
-
-var fontSize = 24
 
 ipcRenderer.on('update-display', function(event, arg){
   console.log('UPDATE-DISPLAY')
@@ -56,20 +55,10 @@ ipcRenderer.on('play-chime', function(event, soundName) {
   chime.play()
 })
 
-function fontResize(sender) {
-  console.log(sender);
-  if (sender.deltaY > 0) {
-    fontSize += 1
-  } else if (sender.deltaY < 0) {
-    fontSize -= 1
-  }
-  document.body.style.fontSize = fontSize + 'pt'
-}
-
 function loaded() {
   ipcRenderer.send('timer-window-loaded', {})
 
-  document.addEventListener('wheel', fontResize)
+  document.addEventListener('wheel', wheel)
 }
 
 </script>
