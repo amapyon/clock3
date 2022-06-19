@@ -7,7 +7,8 @@
     "start": "electron .",
     "build-macOS": "electron-packager ./src clock3 --platform=darwin --arch=x64 --overwrite --electron-version=^2.0.6",
     "build-windows": "electron-packager . clock3 --platform=win32 --arch=x64 --overwrite --electron-version=^2.0.6",
-    "build-windows-32": "electron-packager . clock3 --platform=win32 --arch=ia32 --overwrite --electron-version=^2.0.6"
+    "build-windows-32": "electron-packager . clock3 --platform=win32 --arch=ia32 --overwrite --electron-version=^2.0.6",
+    "build": "npx electron-builder --win --x64 --dir"
   },
   "repository": {
     "type": "git",
@@ -20,9 +21,16 @@
   },
   "homepage": "https://github.com/amapyon/clock3#readme",
   "devDependencies": {
-    "electron-packager": "^12.1.0"
+    "electron": "^19.0.4",
+    "electron-builder": "^23.0.3"
   },
-  "dependencies": {
-    "electron": "^2.0.6"
+  "build": {
+    "appId": "org.amapyon.clock3",
+    "productName": "clock3",
+    "files": [
+      "src/**/**",
+      "icon/**/**",
+      "media/**/**"
+    ]
   }
 }

@@ -1,4 +1,5 @@
 /node_modules
 /clock3-*
+/dist
 *.mp3
 *.wav
