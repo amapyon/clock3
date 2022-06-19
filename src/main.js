@@ -128,6 +128,18 @@ function createWindow() {
     timer.setAlarmMode(arg)
   })
 
+  ipcMain.on('main-window-changeAlarmTime', function(event, arg) {
+    console.log('MAIN-WINDOW-CHANGE_ALARM_TIME')
+    console.log(arg)
+    alarmTime = arg
+  })
+
+  ipcMain.on('main-window-setAlarmMode', function(event, arg) {
+    console.log('MAIN-WINDOW-SET_ALARM_MODE')
+    console.log(arg)
+    alarmMode = arg
+  })
+
   ipcMain.on('main-window-dispayMessage', function(event, arg) {
     console.log('MAIN-WINDOW-DISPLAY_MESSAGE')
     console.log(arg)

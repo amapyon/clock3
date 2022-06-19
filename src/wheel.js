@@ -13,10 +13,10 @@ function handleWhheel(sender) {
 
   function alphaSet(sender) {
     if (sender.deltaY > 0) {
-      alpha += 0.1
+      alpha += 0.01
       if (alpha > 1) alpha = 1
     } else if (sender.deltaY < 0) {
-      alpha -= 0.1
+      alpha -= 0.01
       if (alpha < 0) alpha = 0
     }
     document.body.style.backgroundColor = 'rgba(70, 70, 70, '+ alpha + ')'
