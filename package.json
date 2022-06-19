@@ -21,10 +21,10 @@
   },
   "homepage": "https://github.com/amapyon/clock3#readme",
   "devDependencies": {
+    "electron": "^19.0.4",
     "electron-builder": "^23.0.3"
   },
   "dependencies": {
-    "electron": "^19.0.4"
   },
   "build": {
     "appId": "org.amapyon.clock3",
