@@ -4,6 +4,16 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <title>Timer Controller</title>
   <style type="text/css">
+  div {
+    margin-block-start: 0.8rem;
+    margin-block-end: 0.8rem;
+  }
+  
+  label {
+    user-select: none;
+    white-space: nowrap;
+  }
+
   .button {
     background-color: #dddddd;
     margin: 0px;
@@ -13,20 +23,26 @@
   </style>
 </head>
 <body>
-  <p id="display">0:00</p>
-  <p id="">
-    <input type="checkbox" name="topMostMain" onclick="mainWindowTopmostChanged(this)">最前面に固定</input>
-  </p>
-  <p id="position">
-    <input type="checkbox" name="topMostTimer" onclick="timerWindowTopmostChanged(this)">最前面に固定</input>
+  <span id="display">0:00</span>
+  <div>
+    <label>
+      <input type="checkbox" name="topMostMain" onclick="mainWindowTopmostChanged(this)">最前面に固定</input>
+    </label>
+  </div>
+  <div id="position">
+    <label>
+      <input type="checkbox" name="topMostTimer" onclick="timerWindowTopmostChanged(this)">最前面に固定</input>
+    </label>
     <input type="button" onclick="send('minimize')" value="最小化" />
     <input type="button" onclick="send('restore')" value="通常" />
-  </p>
-  <p id="sound">
+  </div>
+  <div id="sound">
     <input type="button" value="音を確認" onclick="play()"/>
-    <input type="radio" name="sound" value="none" onclick="soundChange(this)" checked>鳴らさない</input>
-  </p>
-  <p id="button">
+    <label>
+      <input type="radio" name="sound" value="none" onclick="soundChange(this)" checked>鳴らさない</input>
+    </label>
+  </div>
+  <div id="button">
     <input type="button" value="継続" onclick="controlClicked(this)" />
     <input type="button" value="停止" onclick="controlClicked(this)" />
     <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >1分</spawn>
@@ -39,17 +55,23 @@
     <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >15分</spawn>
     <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >20分</spawn>
     <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >5秒</spawn>
-  </p>
-  <p id="clock">
+  </div>
+  <div id="clock">
     <input type="button" value="時計" onclick="controlClicked(this)" />
     <input type="text" value="12:00:00" oninput="changeAlarmTime(this)"/>
-    <input type="checkbox" name="alarm" onclick="setArarmMode(this)"/>アラーム
-  </p>
-  <p id="message">
-    <input type="checkbox" name="topMostMessage" onclick="messageWindowTopmostChanged(this)">最前面に固定</input>
-    <input type="checkbox" name="displayMessage" onclick="displayMessage(this)">メッセージ表示</input>
+    <label>
+      <input type="checkbox" name="alarm" onclick="setArarmMode(this)"/>アラーム
+    </label>
+  </div>
+  <div id="message">
+    <label>
+      <input type="checkbox" name="topMostMessage" onclick="messageWindowTopmostChanged(this)">最前面に固定</input>
+    </label>
+    <label>
+      <input type="checkbox" name="displayMessage" onclick="displayMessage(this)">メッセージ表示</input>
+    </label>
     <textarea id="TXT_MESSAGE" col="80" rows="3" oninput="changeMessage(this)">message</textarea>
-  </p>
+  </div>
   <script src="mainWindowreRderer.js"></script>
 </body>
 </html>

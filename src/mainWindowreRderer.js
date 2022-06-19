@@ -1,8 +1,9 @@
 'use strict'
 
 window.electronAPI.handleSetSoundfile((event, dirName, soundfileName) => {
-  const radioNode = document.createElement('spawn')
-  radioNode.innerHTML = '<input type="radio" name="sound" value="' + dirName + '/../media/' + soundfileName + '" onclick="soundChange(this)">' + soundfileName + '</input>'
+  const radioNode = document.createElement('label')
+  const soundfilePath = `${dirName}/../media/${soundfileName}`
+  radioNode.innerHTML = `<input type="radio" name="sound" value="${soundfilePath}" onclick="soundChange(this)">${soundfileName}</input>`
   
   const soundNode = document.getElementById('sound')
   soundNode.appendChild(radioNode)
