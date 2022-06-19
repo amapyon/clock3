@@ -31,6 +31,18 @@
       "src/**/**",
       "icon/**/**",
       "media/**/**"
-    ]
+    ],
+    "mac": {
+      "target": "dmg",
+      "icon": "icon/256.png"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "icon/256.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }
