@@ -56,7 +56,7 @@ function createWindow() {
     console.log('TIMER')
     console.log(arg)
     
-    if (arg ==~ '時計') {
+    if (arg === '時計') {
       clockStart()
     } else if (arg === '継続') {
       timerContinue()
