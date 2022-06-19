@@ -11,6 +11,10 @@
   border: thin solid #333333;
 }
 
+input[type="text"] {
+  width: 10rem;
+}
+
 </style>
 <script type="text/javascript">
 'use strict'
@@ -32,6 +36,13 @@ ipcRenderer.on('update-display', function(event, arg){
   
   const display = document.getElementById('display')
   display.innerHTML = arg
+})
+
+ipcRenderer.on('play-chime', function(event, soundName) {
+  const url = 'file://' + __dirname + '/../media/' + soundName;
+  const chime = new Audio(url);
+  chime.currentTime = 0;
+  chime.play()
 })
 
 function timerStart(sender) {
@@ -87,11 +98,25 @@ function play() {
   
   sounds.forEach(function(soundNode) {
     if (soundNode.checked && soundNode.value != 'none') {
-      const chime = new Audio('file://' + __dirname + '/../media/' + soundNode.value);
-      chime.play()
+      console.log(play.chime);
+      if (!play.chime) {
+        console.log("create instance");
+        play.chime = new Audio();
+      }
+      const url = 'file://' + __dirname + '/../media/' + soundNode.value;
+      play.chime.setAttribute("src", url);
+      play.chime.currentTime = 0;
+      play.chime.play()
     }
   })
+}
 
+function changeAlarmTime(sender) {
+  ipcRenderer.send('main-window-changeAlarmTime', sender.value)
+}
+
+function setArarmMode(sender) {
+  ipcRenderer.send('main-window-setAlarmMode', sender.checked)
 }
 
 function displayMessage(sender) {
@@ -147,7 +172,6 @@ function loaded() {
     <input type="radio" name="sound" value="none" onclick="sound(this)" checked>鳴らさない</input>
   </p>
   <p id="button">
-    <input type="button" value="時計" onclick="controlClicked(this)" />
     <input type="button" value="継続" onclick="controlClicked(this)" />
     <input type="button" value="停止" onclick="controlClicked(this)" />
     <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >1分</spawn>
@@ -161,10 +185,15 @@ function loaded() {
     <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >20分</spawn>
     <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >5秒</spawn>
   </p>
+  <p id="clock">
+    <input type="button" value="時計" onclick="controlClicked(this)" />
+    <input type="text" value="12:00:00" oninput="changeAlarmTime(this)"/>
+    <input type="checkbox" name="alarm" onclick="setArarmMode(this)"/>アラーム
+  </p>
   <p id="message">
     <input type="checkbox" name="topMostMessage" onclick="messageWindowTopMostChanged(this)">最前面に固定</input>
-    <input type="checkbox" name="displayMessage" onClick="displayMessage(this)">メッセージ表示</input>
-    <textarea id="message" col="80" rows="3" onInput="changeMessage(this)"></textarea>
+    <input type="checkbox" name="displayMessage" onclick="displayMessage(this)">メッセージ表示</input>
+    <textarea id="message" col="80" rows="1" oninput="changeMessage(this)"></textarea>
   </p>
 </body>
 </html>

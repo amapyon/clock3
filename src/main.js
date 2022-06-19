@@ -3,18 +3,20 @@
 const {app, BrowserWindow, ipcMain} = require('electron')
 
 //var subWin = null
-var mainWindow = null
-var mainWin = null
-var timerWindow = null
-var timerWin = null
-var messageWindow = null
-var messageWin = null
-var settedTime = 0
-var remainTime = 0
-var elipseTime = 0
-var oldTime = 0
-var timer = 0
-var soundName = 'none'
+let mainWindow = null
+// let mainWin = null
+let timerWindow = null
+// let timerWin = null
+let messageWindow = null
+// let messageWin = null
+let settedTime = 0
+let remainTime = 0
+let elipseTime = 0
+let oldTime = 0
+let timer = 0
+let soundName = 'none'
+let alarmMode = false
+let alarmTime = ''
 
 function createMainWindow () {
   mainWindow = new BrowserWindow({
@@ -26,8 +28,8 @@ function createMainWindow () {
   mainWindow.loadFile('src/main.html')
 
   mainWindow.on('closed', function(){
-    if (timerWindow != null) timerWindow.close()
-    if (messageWindow != null) messageWindow.close()
+    if (timerWindow !== null) timerWindow.close()
+    if (messageWindow !== null) messageWindow.close()
   })
 
 }
@@ -38,6 +40,7 @@ function createTimerWindow () {
     transparent: true,
     frame: false
   })
+  console.log(timerWindow);
 
   timerWindow.loadFile('src/timer.html')
 
@@ -47,7 +50,8 @@ function createTimerWindow () {
 }
 
 function createMessageWindow() {
-  if (messageWindow != null) return
+  if (messageWindow != null) return;
+
   messageWindow = new BrowserWindow({
     width: 640, height: 480,
     transparent: true,
@@ -91,7 +95,7 @@ function createWindow() {
   })
   
   ipcMain.on('main-window-loaded', function(event, arg) {
-    mainWin = event.sender
+    const mainWin = event.sender
 
     const fs = require('fs')
     fs.readdir(__dirname + '/../media', function(err, files){
@@ -105,7 +109,7 @@ function createWindow() {
   })
 
   ipcMain.on('timer-window-loaded', function(event, arg) {
-    timerWin = event.sender
+    const timerWin = event.sender
     updateDisplayColorDisable()
     updateDisplay(toMMSS(0))
   })
@@ -136,14 +140,26 @@ function createWindow() {
     console.log('MESSAGE-WINDOW-TOPMOST-CHAGED')
     console.log(event)
     console.log(arg)
-    if (messageWindow == null) return
-    messageWindow.setAlwaysOnTop(arg)
+    if (messageWi == null) return
+    messageWin.setAlwaysOnTop(arg)
   })
   
   ipcMain.on('sound-changed', function(event, arg) {
     console.log('SOUND-CHAGED')
     console.log(arg)
     soundName = arg
+  })
+
+  ipcMain.on('main-window-changeAlarmTime', function(event, arg) {
+    console.log('MAIN-WINDOW-CHANGE_ALARM_TIME')
+    console.log(arg)
+    alarmTime = arg
+  })
+
+  ipcMain.on('main-window-setAlarmMode', function(event, arg) {
+    console.log('MAIN-WINDOW-SET_ALARM_MODE')
+    console.log(arg)
+    alarmMode = arg
   })
 
   ipcMain.on('main-window-dispayMessage', function(event, arg) {
@@ -174,7 +190,11 @@ function clockStart() {
 
 function clockUpdate() {
   const now = new Date()
-  updateDisplay(now.toLocaleTimeString())
+  const clockString = now.toLocaleTimeString()
+  updateDisplay(clockString)
+  if (alarmMode && clockString === alarmTime) {
+    playChime()
+  }
 }
 
 function timerStart(time) {
@@ -211,12 +231,17 @@ function toMMSS(time) {
 }
 
 function updateDisplay(message) {
-  if (timerWin != null) timerWin.send('update-display', message)
-  if (mainWin != null) mainWin.send('update-display', message)
+  if (timerWindow !== null) {
+    console.log("timerWindow.send('update-display', message);");
+    timerWindow.send('update-display', message);
+  }
+  if (mainWindow !== null) { mainWindow.send('update-display', message); }
 }
 
 function updateDisplayColor(color) {
-  timerWin.send('update-display-color', color)
+  if (timerWindow !== null) {
+    timerWindow.send('update-display-color', color)
+  }
 }
 
 function updateDisplayColorEnable() {
@@ -227,8 +252,9 @@ function updateDisplayColorDisable() {
 }
 
 function playChime() {
-  if (soundName != 'none') {
-    timerWin.send('play-chime', soundName)
+  if (soundName !== 'none') {
+    console.log("playChime()");
+    mainWindow.send('play-chime', soundName)
   }
 }
 

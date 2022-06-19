@@ -34,6 +34,8 @@ p {
 </style>
 <script src="wheel.js"></script>
 <script type="text/javascript">
+'use strict'
+
 const {ipcRenderer} = require('electron')
 
 ipcRenderer.on('update-display', function(event, arg){
@@ -50,10 +52,12 @@ ipcRenderer.on('update-display-color', function(event, arg){
   display.setAttribute('style', 'color:' + arg + ';')
 })
 
-ipcRenderer.on('play-chime', function(event, soundName) {
-  const chime = new Audio('file://' + __dirname + '/../media/' + soundName);
-  chime.play()
-})
+// ipcRenderer.on('play-chime', function(event, soundName) {
+//   const url = 'file://' + __dirname + '/../media/' + soundName;
+//   const chime = new Audio(url);
+//   chime.currentTime = 0;
+//   chime.play()
+// })
 
 function loaded() {
   ipcRenderer.send('timer-window-loaded', {})
