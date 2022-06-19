@@ -1,7 +1,7 @@
-var fontSize = 24
-var alpha = 0.8
+let fontSize = 48
+let alpha = 0.8
 
-function wheel(sender) {
+function handleWhheel(sender) {
   function fontResize(sender) {
     if (sender.deltaY > 0) {
       fontSize += 1
@@ -22,7 +22,7 @@ function wheel(sender) {
     document.body.style.backgroundColor = 'rgba(70, 70, 70, '+ alpha + ')'
   }
 
-  console.log(sender);
+  console.log(sender)
 
   if (sender.ctrlKey) {
     alphaSet(sender)

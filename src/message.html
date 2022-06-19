@@ -15,46 +15,29 @@ body {
   text-align: center;
   margin: 0px auto;
   padding: 0px;
-  font-size: 24pt;
+  font-size: 48pt;
   font-family: "Impact";
   -webkit-app-region: drag;
 }
 
-.display {
+#display-area {
   margin: 50vh auto 0;
   transform: translateY(-50%);
 }
 
-p {
-  -webkit-margin-before: 0;
-  -webkit-margin-after: 0;
+#display {
+  margin-block-start: 0;
+  margin-block-end: 0;
 }
 
 </style>
-<script src="wheel.js"></script>
-<script type="text/javascript">
-const {ipcRenderer} = require('electron')
-
-ipcRenderer.on('message', function(event, arg){
-  console.log('UPDATE-DISPLAY')
-  console.log(event)
-  console.log(arg)
-  
-  const display = document.getElementById('display')
-  display.innerHTML = arg
-})
-
-function loaded() {
-  ipcRenderer.send('message-window-loaded', {})
-
-  document.addEventListener('wheel', wheel)
-}
-
 </script>
 </head>
 <body onload="loaded()">
-  <div class="display">
+  <div id="display-area">
     <p id="display">-</p>
   </div>
+  <script src="wheel.js"></script>
+  <script src="messageWindowRenderer.js"></script>
 </body>
 </html>

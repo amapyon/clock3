@@ -3,173 +3,28 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   <title>Timer Controller</title>
-<style type="text/css">
-.button {
-  background-color: #dddddd;
-  margin: 0px;
-  padding: 4px;
-  border: thin solid #333333;
-}
-
-input[type="text"] {
-  width: 10rem;
-}
-
-</style>
-<script type="text/javascript">
-'use strict'
-
-const {ipcRenderer} = require('electron')
-
-ipcRenderer.on('set-soundfile', function(event, soundfilename) {
-  const radioNode = document.createElement('spawn')
-  radioNode.innerHTML = '<input type="radio" name="sound" value="' + soundfilename + '" onclick="sound(this)">' + soundfilename + '</input>'
-  
-  const soundNode = document.getElementById('sound')
-  soundNode.appendChild(radioNode)
-})
-
-ipcRenderer.on('update-display', function(event, arg){
-  console.log('UPDATE-DISPLAY')
-  console.log(event)
-  console.log(arg)
-  
-  const display = document.getElementById('display')
-  display.innerHTML = arg
-})
-
-ipcRenderer.on('play-chime', function(event, soundName) {
-  const url = 'file://' + __dirname + '/../media/' + soundName;
-  const chime = new Audio(url);
-  chime.currentTime = 0;
-  chime.play()
-})
-
-function timerStart(sender) {
-  console.log('TIMER-START')
-  console.log(sender)
-  console.log(sender.innerHTML)
-  
-  ipcRenderer.send('timer', sender.innerHTML)
-}
-
-function controlClicked(sender) {
-  console.log('CONTROL CLICKED')
-  console.log(sender)
-  console.log(sender.value)
-  
-  ipcRenderer.send('timer', sender.value)
-}
-
-function downed(sender) {
-  console.log('DOWNED')
-  console.log(sender)
-}
-
-function mainWindowTopMostChanged(sender) {
-  console.log(sender.name)
-  console.log(sender.checked)
-
-  ipcRenderer.send('main-window-topmost-changed', sender.checked)
-}
-
-function timerWindowTopMostChanged(sender) {
-  console.log(sender.name)
-  console.log(sender.checked)
-
-  ipcRenderer.send('timer-window-topmost-changed', sender.checked)
-}
-
-function messageWindowTopMostChanged(sender) {
-  console.log(sender.name)
-  console.log(sender.checked)
-
-  ipcRenderer.send('message-window-topmost-changed', sender.checked)
-}
-
-function sound(sender) {
-  console.log(sender.value)
-  ipcRenderer.send('sound-changed', sender.value)
-}
-
-function play() {
-  const sounds = document.getElementsByName('sound')
-  console.log(sounds)
-  
-  sounds.forEach(function(soundNode) {
-    if (soundNode.checked && soundNode.value != 'none') {
-      console.log(play.chime);
-      if (!play.chime) {
-        console.log("create instance");
-        play.chime = new Audio();
-      }
-      const url = 'file://' + __dirname + '/../media/' + soundNode.value;
-      play.chime.setAttribute("src", url);
-      play.chime.currentTime = 0;
-      play.chime.play()
-    }
-  })
-}
-
-function changeAlarmTime(sender) {
-  ipcRenderer.send('main-window-changeAlarmTime', sender.value)
-}
-
-function setArarmMode(sender) {
-  ipcRenderer.send('main-window-setAlarmMode', sender.checked)
-}
-
-function displayMessage(sender) {
-  ipcRenderer.send('main-window-dispayMessage', sender.checked)
-}
-
-function changeMessage(sender) {
-  ipcRenderer.send('main-window-changeMessage', sender.value)
-}
-
-function send(arg) {
-  ipcRenderer.send('main-window', arg)
-}
-
-function loaded() {
-  ipcRenderer.send('main-window-loaded', {})
-  
-  function downed(sender) {
-    console.log('DOWNED')
-    console.log(sender)
-    
-    if (sender.button == 2) {
-      sender.target.setAttribute('contenteditable', true)
-    }
+  <style type="text/css">
+  .button {
+    background-color: #dddddd;
+    margin: 0px;
+    padding: 4px;
+    border: thin solid #333333;
   }
-  
-  function blured(sender) {
-    console.log('BLURED')
-    sender.target.setAttribute('contenteditable', false)
-  }
-  
-  const elements = document.getElementsByName('time')
-  elements.forEach(function(element) {
-    element.addEventListener('mousedown', downed)
-    element.addEventListener('blur', blured)
-  })
-}
-
-</script>
+  </style>
 </head>
-<body onload="loaded()">
+<body>
   <p id="display">0:00</p>
   <p id="">
-    <input type="checkbox" name="topMostMain" onclick="mainWindowTopMostChanged(this)">最前面に固定</input>
+    <input type="checkbox" name="topMostMain" onclick="mainWindowTopmostChanged(this)">最前面に固定</input>
   </p>
   <p id="position">
-    <input type="checkbox" name="topMostTimer" onclick="timerWindowTopMostChanged(this)">最前面に固定</input>
+    <input type="checkbox" name="topMostTimer" onclick="timerWindowTopmostChanged(this)">最前面に固定</input>
     <input type="button" onclick="send('minimize')" value="最小化" />
     <input type="button" onclick="send('restore')" value="通常" />
   </p>
   <p id="sound">
     <input type="button" value="音を確認" onclick="play()"/>
-    <input type="radio" name="sound" value="none" onclick="sound(this)" checked>鳴らさない</input>
+    <input type="radio" name="sound" value="none" onclick="soundChange(this)" checked>鳴らさない</input>
   </p>
   <p id="button">
     <input type="button" value="継続" onclick="controlClicked(this)" />
@@ -183,7 +38,12 @@ function loaded() {
     <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >10分</spawn>
     <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >15分</spawn>
     <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >20分</spawn>
-    <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >5秒</spawn>
+    <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >1秒</spawn>
+  </p>
+  <p id="clock">
+    <input type="button" value="時計" onclick="controlClicked(this)" />
+    <input type="text" value="12:00:00" oninput="changeAlarmTime(this)"/>
+    <input type="checkbox" name="alarm" onclick="setAlarmMode(this)"/>アラーム
   </p>
   <p id="clock">
     <input type="button" value="時計" onclick="controlClicked(this)" />
@@ -191,9 +51,10 @@ function loaded() {
     <input type="checkbox" name="alarm" onclick="setArarmMode(this)"/>アラーム
   </p>
   <p id="message">
-    <input type="checkbox" name="topMostMessage" onclick="messageWindowTopMostChanged(this)">最前面に固定</input>
+    <input type="checkbox" name="topMostMessage" onclick="messageWindowTopmostChanged(this)">最前面に固定</input>
     <input type="checkbox" name="displayMessage" onclick="displayMessage(this)">メッセージ表示</input>
-    <textarea id="message" col="80" rows="1" oninput="changeMessage(this)"></textarea>
+    <textarea id="TXT_MESSAGE" col="80" rows="3" oninput="changeMessage(this)">message</textarea>
   </p>
+  <script src="mainWindowreRderer.js"></script>
 </body>
 </html>
