@@ -7,7 +7,7 @@ let thisWindow = null
 module.exports = class TimerWindow {
   createWindow() {
     thisWindow = new BrowserWindow({
-      width: 200, height: 100,
+      width: 240, height: 100,
       // width: 1200, height: 600,
       transparent: true,
       frame: false,
@@ -30,27 +30,37 @@ module.exports = class TimerWindow {
   }
 
   close() {
-    thisWindow.close()
+    if (thisWindow) {
+      thisWindow.close()
+    }
   }
 
   minimize() {
-    thisWindow.minimize()
+    if (thisWindow) {
+      thisWindow.minimize()
+    }
   }
 
   restore() {
-    thisWindow.restore()
+    if (thisWindow) {
+      thisWindow.restore()
+    }
   }
 
   setAlwaysOnTop(always) {
-    thisWindow.setAlwaysOnTop(always)
+    if (thisWindow) {
+      thisWindow.setAlwaysOnTop(always)
+    }
   }
   
   updateDisplay(displayText) {
-    thisWindow.webContents.send('update-display', displayText)
+    if (thisWindow) {
+      thisWindow.webContents.send('update-display', displayText)
+    }
   }
 
   updateDisplayColor(color) {
-    if (thisWindo) {
+    if (thisWindow) {
       thisWindow.send('update-display-color', color)
     }
   }
