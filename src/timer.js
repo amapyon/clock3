@@ -8,17 +8,13 @@ const toMMSS = (remainTime) => {
 }
 
 class Timer {
-  settedTime = 0
-  remainTime = 0
-  elipseTime = 0
-  oldTime = 0
-  timer = 0
-  timerCallbacks = null
-
   constructor(callbacks) {
     this.timerCallbacks = callbacks
     this.settedTime = 0
     this.remainTime = 0
+    this.elipseTime = 0
+    this.oldTime = 0
+    this.timer = 0
   }
 
   start(time) {

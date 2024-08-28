@@ -4,11 +4,9 @@
   "description": "clock",
   "main": "./src/main.js",
   "scripts": {
-    "start": "electron .",
-    "build-macOS": "electron-packager ./src clock3 --platform=darwin --arch=x64 --overwrite --electron-version=^2.0.6",
-    "build-windows": "electron-packager . clock3 --platform=win32 --arch=x64 --overwrite --electron-version=^2.0.6",
-    "build-windows-32": "electron-packager . clock3 --platform=win32 --arch=ia32 --overwrite --electron-version=^2.0.6",
-    "build": "npx electron-builder --win --x64 --dir"
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "repository": {
     "type": "git",
@@ -21,30 +19,18 @@
   },
   "homepage": "https://github.com/amapyon/clock3#readme",
   "devDependencies": {
+    "@electron-forge/cli": "^7.4.0",
+    "@electron-forge/maker-deb": "^7.4.0",
+    "@electron-forge/maker-rpm": "^7.4.0",
+    "@electron-forge/maker-squirrel": "^7.4.0",
+    "@electron-forge/maker-zip": "^7.4.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
+    "@electron-forge/plugin-fuses": "^7.4.0",
+    "@electron/fuses": "^1.8.0",
     "electron": "^19.0.4",
-    "electron-builder": "^23.0.3"
+    "electron-packager": "^17.1.2"
   },
   "dependencies": {
-  },
-  "build": {
-    "appId": "org.amapyon.clock3",
-    "productName": "clock3",
-    "files": [
-      "src/**/**",
-      "icon/**/**",
-      "media/**/**"
-    ],
-    "mac": {
-      "target": "dmg",
-      "icon": "icon/256.png"
-    },
-    "win": {
-      "target": "nsis",
-      "icon": "icon/256.png"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
-    }
+    "electron-squirrel-startup": "^1.0.1"
   }
 }
