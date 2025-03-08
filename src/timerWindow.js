@@ -11,6 +11,7 @@ module.exports = class TimerWindow {
       // width: 1200, height: 600,
       transparent: true,
       frame: false,
+      icon: '../icon/32.png',
       webPreferences: {
         preload: __dirname + '/timerWindowPreload.js'
       }

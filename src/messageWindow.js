@@ -19,6 +19,7 @@ module.exports = class MessageWindow {
       // width: 1200, height: 600,
       transparent: true,
       frame: false,
+      icon: '../icon/32.png',
       webPreferences: {
         preload: __dirname + '/messageWindowPreload.js'
       }
