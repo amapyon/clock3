@@ -1,12 +1,47 @@
 'use strict'
 
+function setSelectSoundList(soundfilePath, soundfileName) {
+  console.log(soundfileName);
+  const soundListItem = document.createElement('option')
+  soundListItem.setAttribute('value', soundfilePath)
+  soundListItem.innerHTML = soundfileName
+  document.getElementById('soundfileList[1]').appendChild(soundListItem.cloneNode(true))
+  document.getElementById('soundfileList[2]').appendChild(soundListItem.cloneNode(true))
+  document.getElementById('soundfileList[clock]').appendChild(soundListItem.cloneNode(true))
+}
+
+function playSoundfileList(chimeId) {
+  console.log(`PLAY-SOUND-[${chimeId}]`)
+  const soundfileList = document.getElementById(`soundfileList[${chimeId}]`)
+  const soundfilePath = soundfileList.value
+
+  if (soundfilePath !== 'NONE') {
+    playSoundfilePath(soundfilePath)
+  }
+}
+
+function playSoundfile(sender) {
+  console.log('playSoundfile()');
+  const sounfilePath = sender.children[0].value
+  playSoundfilePath(sounfilePath)
+}
+
+function playSoundfilePath(soundfilePath) {
+  const soundfile = new Audio('file://' + soundfilePath)
+  soundfile.play()
+}
+
 window.electronAPI.handleSetSoundfile((event, dirName, soundfileName) => {
+  console.log('SET-SOUND-FILE');
+
   const radioNode = document.createElement('label')
   const soundfilePath = `${dirName}/../media/${soundfileName}`
-  radioNode.innerHTML = `<input type="radio" name="sound" value="${soundfilePath}" onclick="soundChange(this)">${soundfileName}</input>`
+  radioNode.innerHTML = `<spawn ondblclick="playSoundfile(this)"><input type="radio" name="sound" value="${soundfilePath}">${soundfileName}</input></spawn>`
   
   const soundNode = document.getElementById('sound')
   soundNode.appendChild(radioNode)
+
+  setSelectSoundList(soundfilePath, soundfileName)
 })
 
 window.electronAPI.handleUpdateDisplay((event, arg) => {
@@ -56,12 +91,13 @@ function soundChange(sender) {
   window.electronAPI.soundChange(sender)
 }
 
-window.electronAPI.handlePlayChime((event, soundName) => {
-  console.log(soundName)
-  const url = 'file://' + soundName
-  const chime = new Audio(url)
-  chime.currentTime = 0
-  chime.play()
+window.electronAPI.handleChime((event, chimeId) => {
+  console.log(chimeId)
+  playSoundfileList(chimeId)
+})
+
+window.electronAPI.handleAlarm((event) => {
+  playSoundfileList('clock')
 })
 
 function play() {
@@ -74,6 +110,44 @@ function play() {
       chime.play()
     }
   })
+}
+
+const audioContext = new AudioContext()
+let _player = null
+
+function getSoundfilePath() {
+  const sounds = document.getElementsByName('sound')
+  for (const soundfileNode of sounds.values()) {
+    if (soundfileNode.checked) {
+      return soundfileNode.value
+    }
+  }
+  return 'NONE'
+}
+
+async function playLoop() {
+  if (_player) {
+    _player.stop()
+  }
+  const soundfilePath = getSoundfilePath()
+  console.log(soundfilePath)
+
+  const response = await fetch('file://' + soundfilePath)
+  const arrayBuffer = await response.arrayBuffer()
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+  _player = audioContext.createBufferSource()
+  _player.buffer = audioBuffer;
+  _player.loop = true
+  _player.connect(audioContext.destination)
+  _player.start()
+}
+
+function playStop() {
+  _player.stop()
+}
+
+function changeChimeTime(chimeId, sender) {
+  window.electronAPI.changeChimeTime(chimeId, sender)
 }
 
 function changeAlarmTime(sender) {
@@ -96,9 +170,7 @@ function send(arg) {
   window.electronAPI.send(arg)
 }
 
-function loaded() {
-  window.electronAPI.mainWindowloaded()
-  
+function setTimePanels() {
   function downed(sender) {
     console.log('DOWNED')
     console.log(sender)
@@ -118,6 +190,11 @@ function loaded() {
     element.addEventListener('mousedown', downed)
     element.addEventListener('blur', blured)
   })
+}
+
+function loaded() {
+  window.electronAPI.mainWindowloaded()
+  setTimePanels()
 }
 
 loaded()

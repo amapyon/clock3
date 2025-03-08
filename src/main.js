@@ -3,7 +3,6 @@
 const {app, BrowserWindow, ipcMain} = require('electron')
 const TimerWindow = require('./timerWindow.js')
 const MessageWindow = require('./messageWindow.js')
-const Chime = require('./chime.js')
 const { Timer, toMMSS } = require('./timer.js')
 
 app.disableHardwareAcceleration()
@@ -13,8 +12,6 @@ let timerWindow = null
 let messageWindow = null
 
 let timer = null
-
-Chime.setSoundName('none')
 
 let message = 'message'
 
@@ -110,22 +107,16 @@ function createWindow() {
     mainWindow.setAlwaysOnTop(arg)
   })
   
-  ipcMain.on('sound-changed', function(event, arg) {
-    console.log('SOUND-CHAGED')
-    console.log(arg)
-    Chime.setSoundName(arg)
+  ipcMain.on('main-window-changeChimeTime', function(event, id, time) {
+    console.log('MAIN-WINDOW-CHANGE_CHIME_TIME')
+    console.log([id, time])
+    timer.setChimeTime(id, time)
   })
 
   ipcMain.on('main-window-changeAlarmTime', function(event, arg) {
     console.log('MAIN-WINDOW-CHANGE_ALARM_TIME')
     console.log(arg)
     timer.setAlarmTime(arg)
-  })
-
-  ipcMain.on('main-window-setAlarmMode', function(event, arg) {
-    console.log('MAIN-WINDOW-SET_ALARM_MODE')
-    console.log(arg)
-    timer.setAlarmMode(arg)
   })
 
   ipcMain.on('main-window-dispayMessage', function(event, arg) {
@@ -186,16 +177,20 @@ function updateDisplay(message) {
 
 function finishTimer() {
   updateDisplayColorDisable()
-  Chime.playChime(mainWindow)
+}
+
+function chime(chimeId) {
+  mainWindow.send('chime', chimeId)
 }
 
 function alarmClock() {
-  Chime.playChime(mainWindow)
+  mainWindow.send('alarm')
 }
 
 const timerCallbacks = {
   updateDisplay: updateDisplay,
   finishTimer: finishTimer,
+  chime: chime,
   alarmClock: alarmClock,
 }
 

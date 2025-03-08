@@ -20,6 +20,11 @@
     padding: 4px;
     border: thin solid #333333;
   }
+
+  .chime-time {
+    width: 2rem;
+    text-align: right;
+  }
   </style>
 </head>
 <body>
@@ -36,12 +41,6 @@
     <input type="button" onclick="send('minimize')" value="最小化" />
     <input type="button" onclick="send('restore')" value="通常" />
   </div>
-  <div id="sound">
-    <input type="button" value="音を確認" onclick="play()"/>
-    <label>
-      <input type="radio" name="sound" value="none" onclick="soundChange(this)" checked>鳴らさない</input>
-    </label>
-  </div>
   <div id="button">
     <input type="button" value="継続" onclick="controlClicked(this)" />
     <input type="button" value="停止" onclick="controlClicked(this)" />
@@ -56,12 +55,26 @@
     <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >20分</spawn>
     <spawn class="button" name="time" onclick="timerStart(this)" contenteditable="false" >5秒</spawn>
   </div>
+  <div id="chime[1]">
+    <input type="text" value="0" class="chime-time" oninput="changeChimeTime(1, this)" />
+    <select name="soundfileList" id="soundfileList[1]">
+      <option value="NONE">00_NONE</option>
+    </select>
+    <input type="button" name="play" value="PLAY" onclick="playSoundfileList(1)" />
+  </div>
+  <div id="chime[2]">
+    <input type="text" value="0" class="chime-time" oninput="changeChimeTime(2, this)" />
+    <select name="soundfileList" id="soundfileList[2]">
+      <option value="NONE">00_NONE</option>
+    </select>
+    <input type="button" name="play" value="PLAY" onclick="playSoundfileList(2)" />
+  </div>
   <div id="clock">
     <input type="button" value="時計" onclick="controlClicked(this)" />
-    <input type="text" value="12:00:00" oninput="changeAlarmTime(this)"/>
-    <label>
-      <input type="checkbox" name="alarm" onclick="setAlarmMode(this)"/>アラーム
-    </label>
+    <input type="text" value="12:00:00" size="8" oninput="changeAlarmTime(this)"/>
+    <select name="soundfileList" id="soundfileList[clock]">
+      <option value="NONE">00_NONE</option>
+    </select>
   </div>
   <div id="message">
     <label>
@@ -72,6 +85,12 @@
     </label>
     <textarea id="TXT_MESSAGE" col="80" rows="3" oninput="changeMessage(this)">message</textarea>
   </div>
-  <script src="mainWindowreRderer.js"></script>
+  <div id="sound">
+    <div>
+      <input type="button" value="ループ再生" onclick="playLoop()"/>
+      <input type="button" value="再生停止" onclick="playStop()"/>
+    </div>
+  </div>
+  <script src="mainWindowRenderer.js"></script>
 </body>
 </html>

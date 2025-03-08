@@ -15,6 +15,8 @@ class Timer {
     this.elipseTime = 0
     this.oldTime = 0
     this.timer = 0
+    this.chimes = [undefined, {time: 0, played: false}, {time: 0, played: false}]
+    this.alarm = {time: '12:00:00', played: false}
   }
 
   start(time) {
@@ -24,6 +26,8 @@ class Timer {
     this.remainTime = this.settedTime 
     this.updateDisplay(toMMSS(this.remainTime))
     this.elipseTime = 0
+    this.chimes[1].played = false
+    this.chimes[2].played = false
     this.restart()
   }
 
@@ -49,18 +53,29 @@ class Timer {
     console.log(this.settedTime, diffTime, this.elipseTime, this.remainTime)
   
     this.updateDisplay(toMMSS(this.remainTime))
+    this.chime(1)
+    this.chime(2)
   
     if (this.remainTime <= 0) {
       this.stop()
-      console.log(this.timerCallbacks)
-      console.log(this.timerCallbacks.finishTimer)
       if (this.timerCallbacks && this.timerCallbacks.finishTimer) {
         this.timerCallbacks.finishTimer()
       }
     }
   }
 
+  chime(chimeId) {
+    if (!this.chimes[chimeId].played && this.remainTime <= this.chimes[chimeId].time) {
+      this.chimes[chimeId].played = true
+      if (this.timerCallbacks && this.timerCallbacks.chime) {
+        console.log(`PLAY chimes[${chimeId}]`)
+        this.timerCallbacks.chime(chimeId)
+      }
+    }
+  }
+
   clockStart() {
+    this.alarm.played = false
     clearInterval(this.timer)
     this.timer = setInterval(this.clockUpdate.bind(this), 200)
   }
@@ -70,22 +85,27 @@ class Timer {
     const clockString = now.toLocaleTimeString()
     this.updateDisplay(clockString)
 
-    if (this.alarmMode && clockString === this.alarmTime && !this.alarmed) {
-      this.alarmed = true
+    console.log(clockString, this.alarm.time, this.alarm.played)
+
+    if (clockString === this.alarm.time && !this.alarm.played) {
+      this.alarm.played = true
       if (this.timerCallbacks && this.timerCallbacks.alarmClock) {
         this.timerCallbacks.alarmClock()
       }
     }
   }
 
-  setAlarmTime(alarmTime) {
-    this.alarmTime = alarmTime
-    this.alarmed = false
+  setChimeTime(id, chimeTime) {
+    console.log([id, chimeTime])
+    this.chimes[id].time = parseInt(chimeTime, 10) * 1000
+    console.log(this.chimes);
   }
 
-  setAlarmMode(alarmMode) {
-    this.alarmMode = alarmMode
-    this.alarmed = false
+  setAlarmTime(alarmTime) {
+    console.log('setAlarmTime')
+    console.log(alarmTime)
+    this.alarm.time = alarmTime
+    this.alarm.played = false
   }
 
   updateDisplay(displayText) {
