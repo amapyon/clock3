@@ -30,8 +30,15 @@ function createMainWindow() {
   // mainWindow.webContents.openDevTools()
 
   mainWindow.on('closed', () => {
-    if (timerWindow) timerWindow.close()
-    if (messageWindow) messageWindow.close()
+    mainWindow = null
+    if (timerWindow) {
+      timerWindow.close()
+      timerWindow = null
+    }
+    if (messageWindow) {
+      messageWindow.close()
+      messageWindow = null
+    }
   })
 }
 
@@ -169,10 +176,8 @@ function updateDisplayColorDisable() {
 }
 
 function updateDisplay(message) {
-  timerWindow.updateDisplay(message)
-  if (mainWindow) {
-    mainWindow.send('update-display', message)
-  }
+  timerWindow && timerWindow.updateDisplay(message)
+  mainWindow && mainWindow.send('update-display', message)
 }
 
 function finishTimer() {
