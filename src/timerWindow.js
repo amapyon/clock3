@@ -57,7 +57,7 @@ module.exports = class TimerWindow {
   updateDisplay(displayText) {
     if (thisWindow) {
       thisWindow.webContents.send('update-display', displayText)
-      thisWindow.setTitle(displayText)
+      // thisWindow.setTitle(displayText)
     }
   }
 
